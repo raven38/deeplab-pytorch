@@ -100,13 +100,8 @@ ENV/
 # mypy
 .mypy_cache/
 
-*.vscode
-*.pth
-*.pth.tar
-runs/
 .DS_Store
 exps/
-_*
 *.pdf
 *.gv
 .style.yapf
