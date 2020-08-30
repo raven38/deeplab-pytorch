@@ -12,7 +12,7 @@ setuptools.setup(
     long_description_content_type='text/markdown',
     url='https://github.com/raven38/deeplab-pytorch',
     packages=setuptools.find_packages(),
-    pakcage_data={'deeplab', ['cocostuff164k.yaml']},
+    pakcage_data={'deeplab': ['cocostuff164k.yaml']},
     classifiers=(
         'Programming Language :: Python :: 3',
         'Operating System :: OS Independent',
