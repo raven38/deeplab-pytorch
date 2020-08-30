@@ -78,6 +78,7 @@ class CocoStuff164k(_BaseDataset):
                     list(sorted(self.img_dir.glob("**/*.png")))
                 self.label_path = list(sorted(self.seg_dir.glob("**/*.jpg"))) + \
                     list(sorted(self.seg_dir.glob("**/*.png")))
+                print(len(file_list))
                 file_list = self.label_path
             file_list = [f.split("/")[-1].replace(".png", "") for f in file_list]
             self.files = file_list
