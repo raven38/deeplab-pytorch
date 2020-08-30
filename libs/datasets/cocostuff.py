@@ -72,14 +72,15 @@ class CocoStuff164k(_BaseDataset):
                 print("{} has no image".format(osp.join(self.root, "images", self.split)))
                 file_list = sorted(glob(osp.join(self.root, f"images_{self.split[:-4]}", "*.png")))
                 print(f'detect {len(file_list)} files in {osp.join(self.root, f"images_{self.split[:-4]}", "*.png")}')
-            file_list = [f.split("/")[-1].replace(".png", "") for f in file_list]
-            self.files = file_list
             self.image_path, self.label_path = None, None
             if self.seg_dir and self.img_dir:
                 self.image_path = list(sorted(self.img_dir.glob("**/*.jpg"))) + \
                     list(sorted(self.img_dir.glob("**/*.png")))
                 self.label_path = list(sorted(self.seg_dir.glob("**/*.jpg"))) + \
                     list(sorted(self.seg_dir.glob("**/*.png")))
+                file_list = self.label_path
+            file_list = [f.split("/")[-1].replace(".png", "") for f in file_list]
+            self.files = file_list
         else:
             raise ValueError("Invalid split name: {}".format(self.split))
 
