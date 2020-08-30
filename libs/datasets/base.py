@@ -30,6 +30,7 @@ class _BaseDataset(data.Dataset):
         crop_size=321,
         scales=(1.0),
         flip=True,
+        **kwargs,
     ):
         self.root = root
         self.split = split

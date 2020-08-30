@@ -9,6 +9,7 @@ from __future__ import absolute_import, print_function
 
 import os.path as osp
 from glob import glob
+from pathlib import Path
 
 import cv2
 import numpy as np
@@ -59,28 +60,49 @@ class CocoStuff164k(_BaseDataset):
     """COCO-Stuff 164k dataset"""
 
     def __init__(self, **kwargs):
+        self.img_dir = Path(kwargs['img_dir'])
+        self.seg_dir = Path(kwargs['seg_dir'])
         super(CocoStuff164k, self).__init__(**kwargs)
 
     def _set_files(self):
         # Create data list by parsing the "images" folder
         if self.split in ["train2017", "val2017"]:
             file_list = sorted(glob(osp.join(self.root, "images", self.split, "*.jpg")))
-            assert len(file_list) > 0, "{} has no image".format(
-                osp.join(self.root, "images", self.split)
-            )
-            file_list = [f.split("/")[-1].replace(".jpg", "") for f in file_list]
+            if len(file_list) == 0:
+                print("{} has no image".format(osp.join(self.root, "images", self.split)))
+                file_list = sorted(glob(osp.join(self.root, f"images_{self.split[:-4]}", "*.png")))
+                print(f'detect {len(file_list)} files in {osp.join(self.root, f"images_{self.split[:-4]}", "*.png")}')
+            file_list = [f.split("/")[-1].replace(".png", "") for f in file_list]
             self.files = file_list
+            self.image_path, self.label_path = None, None
+            if self.seg_dir and self.img_dir:
+                self.image_path = list(sorted(self.img_dir.glob("**/*.jpg"))) + \
+                    list(sorted(self.img_dir.glob("**/*.png")))
+                self.label_path = list(sorted(self.seg_dir.glob("**/*.jpg"))) + \
+                    list(sorted(self.seg_dir.glob("**/*.png")))
         else:
             raise ValueError("Invalid split name: {}".format(self.split))
 
     def _load_data(self, index):
         # Set paths
         image_id = self.files[index]
-        image_path = osp.join(self.root, "images", self.split, image_id + ".jpg")
-        label_path = osp.join(self.root, "annotations", self.split, image_id + ".png")
+        if self.image_path:
+            image_path = self.image_path[index]
+        else:
+            image_path = osp.join(self.root, "images", self.split, image_id + ".png")
+        if self.label_path:
+            label_path = self.label_path[index]
+        else:
+            label_path = osp.join(self.root, "annotations", self.split, image_id + ".png")
         # Load an image and label
-        image = cv2.imread(image_path, cv2.IMREAD_COLOR).astype(np.float32)
-        label = cv2.imread(label_path, cv2.IMREAD_GRAYSCALE)
+        if not osp.exists(str(image_path)):
+            image_path = osp.join(self.root, f"images_{self.split[:-4]}", image_id + ".png")
+            label_path = osp.join(self.root, f"labels_{self.split[:-4]}", image_id + ".png")
+
+        image = cv2.imread(str(image_path), cv2.IMREAD_COLOR).astype(np.float32)
+        label = cv2.imread(str(label_path), cv2.IMREAD_GRAYSCALE)
+        image = cv2.resize(image, (256, 256), interpolation=cv2.INTER_LINEAR)
+        label = cv2.resize(label, (256, 256), interpolation=cv2.INTER_NEAREST)
         return image_id, image, label
 
 

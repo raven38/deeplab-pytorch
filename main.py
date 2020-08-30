@@ -299,9 +299,21 @@ def train(config_path, cuda):
     help="PyTorch model to be loaded",
 )
 @click.option(
+    "--img-dir", "--img_dir",
+    type=click.Path(exists=True),
+    required=True,
+    help="Image directory",
+)
+@click.option(
+    "--seg-dir", "--seg_dir",
+    type=click.Path(exists=True),
+    required=True,
+    help="Segmentation directory",
+)
+@click.option(
     "--cuda/--cpu", default=True, help="Enable CUDA if available [default: --cuda]"
 )
-def test(config_path, model_path, cuda):
+def test(config_path, model_path, cuda, img_dir, seg_dir):
     """
     Evaluation on validation set
     """
@@ -318,6 +330,8 @@ def test(config_path, model_path, cuda):
         ignore_label=CONFIG.DATASET.IGNORE_LABEL,
         mean_bgr=(CONFIG.IMAGE.MEAN.B, CONFIG.IMAGE.MEAN.G, CONFIG.IMAGE.MEAN.R),
         augment=False,
+        img_dir=img_dir,
+        seg_dir=seg_dir,
     )
     print(dataset)
 
@@ -386,13 +400,12 @@ def test(config_path, model_path, cuda):
 
         preds += list(labels.cpu().numpy())
         gts += list(gt_labels.numpy())
-
     # Pixel Accuracy, Mean Accuracy, Class IoU, Mean IoU, Freq Weighted IoU
     score = scores(gts, preds, n_class=CONFIG.DATASET.N_CLASSES)
 
     with open(save_path, "w") as f:
         json.dump(score, f, indent=4, sort_keys=True)
-
+    print(score)
 
 @main.command()
 @click.option(
