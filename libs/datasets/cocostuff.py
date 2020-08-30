@@ -105,6 +105,8 @@ class CocoStuff164k(_BaseDataset):
         label = cv2.resize(label, (256, 256), interpolation=cv2.INTER_NEAREST)
         return image_id, image, label
 
+    def __len__(self):
+        return len(self.image_path)
 
 def get_parent_class(value, dictionary):
     # Get parent class with COCO-Stuff hierarchy

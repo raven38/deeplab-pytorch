@@ -117,7 +117,6 @@ def main(config_path, model_path, cuda, img_dir, seg_dir):
     """
     Evaluation on validation set
     """
-
     config_path = Path(os.path.dirname(os.path.realpath(__file__))) /'cocostuff164k.yaml'
     # Configuration
     CONFIG = OmegaConf.load(config_path)
