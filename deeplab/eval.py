@@ -26,7 +26,6 @@ from tqdm import tqdm
 
 from libs.datasets import get_dataset
 from libs.models import DeepLabV2_ResNet101_MSC
-from libs.utils import DenseCRF, PolynomialLR, scores
 
 
 def makedirs(dirs):
